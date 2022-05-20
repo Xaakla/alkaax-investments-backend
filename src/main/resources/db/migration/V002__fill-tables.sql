@@ -1,0 +1,1 @@
+INSERT INTO users VALUES (1, 'Diego', 'Rocha', 'xaakla', 'xaakla@gmail.com', '123456');
