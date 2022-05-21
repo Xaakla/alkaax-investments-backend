@@ -32,7 +32,7 @@ public class StockController {
     }
 
     @DeleteMapping("/{stockId}")
-    public ResponseEntity delete(@PathVariable Long stockId) {
+    public ResponseEntity deleteById(@PathVariable Long stockId) {
         return stockService.deleteById(stockId);
     }
 }
