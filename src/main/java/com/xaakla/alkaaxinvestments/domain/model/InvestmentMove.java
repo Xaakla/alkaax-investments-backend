@@ -1,5 +1,7 @@
 package com.xaakla.alkaaxinvestments.domain.model;
 
+import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveCreateReqModel;
+import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveEditReqModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +27,7 @@ public class InvestmentMove {
     private Float price;
 
     @NotEmpty
+    @Enumerated(EnumType.STRING)
     private InvestmentMoveStatus status;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -34,4 +37,21 @@ public class InvestmentMove {
     @OneToOne()
     @JoinColumn(name = "batch_investment_id", nullable = false, foreignKey = @ForeignKey(name = "fk_investment_moves_batch_investment"))
     private BatchInvestment batchInvestment;
+
+    public InvestmentMove(InvestmentMoveCreateReqModel investmentMoveCreateReqModel, Stock stock, BatchInvestment batchInvestment) {
+        this.quantity = investmentMoveCreateReqModel.getQuantity();
+        this.price = investmentMoveCreateReqModel.getPrice();
+        this.status = investmentMoveCreateReqModel.getStatus();
+        this.stock = stock;
+        this.batchInvestment = batchInvestment;
+    }
+
+    public InvestmentMove(InvestmentMoveEditReqModel investmentMoveEditReqModel, Stock stock, BatchInvestment batchInvestment) {
+        this.id = investmentMoveEditReqModel.getId();
+        this.quantity = investmentMoveEditReqModel.getQuantity();
+        this.price = investmentMoveEditReqModel.getPrice();
+        this.status = investmentMoveEditReqModel.getStatus();
+        this.stock = stock;
+        this.batchInvestment = batchInvestment;
+    }
 }
