@@ -1,5 +1,9 @@
 package com.xaakla.alkaaxinvestments.domain.model;
 
+import com.xaakla.alkaaxinvestments.api.model.batchDividend.BatchDividendCreateReqModel;
+import com.xaakla.alkaaxinvestments.api.model.batchDividend.BatchDividendEditReqModel;
+import com.xaakla.alkaaxinvestments.api.model.batchInvestment.BatchInvestmentCreateReqModel;
+import com.xaakla.alkaaxinvestments.api.model.batchInvestment.BatchInvestmentEditReqModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,4 +27,15 @@ public class BatchDividend {
 
     @NotNull
     private Float total;
+
+    public BatchDividend(BatchDividendCreateReqModel batchDividendCreateReqModel) {
+        this.name = batchDividendCreateReqModel.getName();
+        this.total = 0f;
+    }
+
+    public BatchDividend(BatchDividendEditReqModel batchDividendEditReqModel, Float total) {
+        this.id = batchDividendEditReqModel.getId();
+        this.name = batchDividendEditReqModel.getName();
+        this.total = total;
+    }
 }
