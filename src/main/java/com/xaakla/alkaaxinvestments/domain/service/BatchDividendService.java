@@ -6,6 +6,7 @@ import com.xaakla.alkaaxinvestments.domain.model.BatchDividend;
 import com.xaakla.alkaaxinvestments.domain.repository.BatchDividendRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BatchDividendService {
@@ -18,12 +19,14 @@ public class BatchDividendService {
 
     public ResponseEntity findAll() { return ResponseEntity.status(200).body(batchDividendRepository.findAll()); }
 
+    @Transactional
     public ResponseEntity save(BatchDividendCreateReqModel batchDividendCreateReqModel) {
         batchDividendRepository.save(new BatchDividend(batchDividendCreateReqModel));
 
         return ResponseEntity.status(201).body("Batch dividend created successfully");
     }
 
+    @Transactional
     public ResponseEntity edit(BatchDividendEditReqModel batchDividendEditReqModel) {
         if (!batchDividendRepository.existsById(batchDividendEditReqModel.getId())) {
             return ResponseEntity.status(400).body("Id '"+batchDividendEditReqModel.getId()+"' does not exists!");
@@ -36,6 +39,7 @@ public class BatchDividendService {
         return ResponseEntity.status(200).body("Batch dividend edited successfully");
     }
 
+    @Transactional
     public ResponseEntity deleteById(Long batchDividendId) {
         if (!batchDividendRepository.existsById(batchDividendId)) {
             return ResponseEntity.status(400).body("Id '"+batchDividendId+"' does not exists!");

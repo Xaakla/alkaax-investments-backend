@@ -6,6 +6,7 @@ import com.xaakla.alkaaxinvestments.domain.model.BatchInvestment;
 import com.xaakla.alkaaxinvestments.domain.repository.BatchInvestmentRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BatchInvestmentService {
@@ -18,12 +19,14 @@ public class BatchInvestmentService {
 
     public ResponseEntity findAll() { return ResponseEntity.status(200).body(batchInvestmentRepository.findAll()); }
 
+    @Transactional
     public ResponseEntity save(BatchInvestmentCreateReqModel batchInvestmentCreateReqModel) {
-        batchInvestmentRepository.save(new BatchInvestment(batchInvestmentCreateReqModel));
+        var batchInvestment = batchInvestmentRepository.save(new BatchInvestment(batchInvestmentCreateReqModel));
 
-        return ResponseEntity.status(201).body("Batch investment created successfully");
+        return ResponseEntity.status(201).body(batchInvestment);
     }
 
+    @Transactional
     public ResponseEntity edit(BatchInvestmentEditReqModel batchInvestmentEditReqModel) {
         if (!batchInvestmentRepository.existsById(batchInvestmentEditReqModel.getId())) {
             return ResponseEntity.status(400).body("Id '"+batchInvestmentEditReqModel.getId()+"' does not exists!");
@@ -36,6 +39,7 @@ public class BatchInvestmentService {
         return ResponseEntity.status(200).body("Batch investment edited successfully");
     }
 
+    @Transactional
     public ResponseEntity deleteById(Long batchInvestmentId) {
         if (!batchInvestmentRepository.existsById(batchInvestmentId)) {
             return ResponseEntity.status(400).body("Id '"+batchInvestmentId+"' does not exists!");

@@ -9,4 +9,8 @@ public interface BatchInvestmentRepository extends JpaRepository<BatchInvestment
 
     @Query("SELECT total FROM BatchInvestment WHERE id = :id")
     Float getTotal(Long id);
+
+    @Modifying
+    @Query("UPDATE BatchInvestment p SET p.total = :newTotal WHERE p.id = :id")
+    void updateTotal(Float newTotal, Long id);
 }

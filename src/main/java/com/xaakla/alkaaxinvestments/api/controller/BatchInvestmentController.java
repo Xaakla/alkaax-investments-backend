@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/batch-inventments")
+@RequestMapping("/batch-investments")
 public class BatchInvestmentController {
 
     @Autowired

@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,7 +31,7 @@ public class InvestmentMove {
     @Enumerated(EnumType.STRING)
     private InvestmentMoveStatus status;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "stock_id", nullable = false, foreignKey = @ForeignKey(name = "fk_investment_moves_stock"))
     private Stock stock;
 

@@ -29,7 +29,7 @@ public class Stock {
 
     public Stock(StockCreateReqModel stockCreateReqModel) {
         this.code = stockCreateReqModel.getCode();
-        this.quotas = stockCreateReqModel.getQuotas();
+        this.quotas = 0;
     }
 
     public Stock(StockEditReqModel stockEditReqModel) {

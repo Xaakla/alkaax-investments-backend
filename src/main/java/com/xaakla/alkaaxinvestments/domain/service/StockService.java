@@ -6,6 +6,7 @@ import com.xaakla.alkaaxinvestments.domain.model.Stock;
 import com.xaakla.alkaaxinvestments.domain.repository.StockRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StockService {
@@ -20,12 +21,14 @@ public class StockService {
         return ResponseEntity.status(200).body(stockRepository.findAll());
     }
 
+    @Transactional
     public ResponseEntity save(StockCreateReqModel stockCreateReqModel) {
         stockRepository.save(new Stock(stockCreateReqModel));
 
         return ResponseEntity.status(201).body("Stock created sucessfully!");
     }
 
+    @Transactional
     public ResponseEntity edit(StockEditReqModel stockEditReqModel) {
         if (!stockRepository.existsById(stockEditReqModel.getId())) {
             return ResponseEntity.status(400).body("Id '"+stockEditReqModel.getId()+"' does not exists!");
@@ -36,6 +39,7 @@ public class StockService {
         return ResponseEntity.status(200).body("Stock edited successfully");
     }
 
+    @Transactional
     public ResponseEntity deleteById(Long stockId) {
         if (!stockRepository.existsById(stockId)) {
             return ResponseEntity.status(400).body("Id '"+stockId+"' does not exists!");
