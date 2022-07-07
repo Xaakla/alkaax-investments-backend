@@ -35,7 +35,7 @@ public class InvestmentMove {
     @JoinColumn(name = "stock_id", nullable = false, foreignKey = @ForeignKey(name = "fk_investment_moves_stock"))
     private Stock stock;
 
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "batch_investment_id", nullable = false, foreignKey = @ForeignKey(name = "fk_investment_moves_batch_investment"))
     private BatchInvestment batchInvestment;
 

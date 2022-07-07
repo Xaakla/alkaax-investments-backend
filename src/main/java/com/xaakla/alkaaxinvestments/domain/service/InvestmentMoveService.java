@@ -3,6 +3,7 @@ package com.xaakla.alkaaxinvestments.domain.service;
 import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveCreateReqModel;
 import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveEditReqModel;
 import com.xaakla.alkaaxinvestments.domain.model.InvestmentMove;
+import com.xaakla.alkaaxinvestments.domain.model.InvestmentMoveStatus;
 import com.xaakla.alkaaxinvestments.domain.repository.BatchInvestmentRepository;
 import com.xaakla.alkaaxinvestments.domain.repository.InvestmentMoveRepository;
 import com.xaakla.alkaaxinvestments.domain.repository.StockRepository;
@@ -34,14 +35,26 @@ public class InvestmentMoveService {
     @Transactional
     public ResponseEntity saveAll(List<InvestmentMoveCreateReqModel> investmentMoveCreateReqModelList) {
         var investmentMoves = investmentMoveCreateReqModelList.stream().map(it -> {
-            return new InvestmentMove(it,
-                stockRepository.findById(it.getStockId()).orElseThrow(() -> {throw new RuntimeException("Stock ID not found");}),
-                batchInvestmentRepository.findById(it.getBatchInvestmentId()).orElseThrow(() -> {throw new RuntimeException("Batch Investment ID not found");}));
+            it.setPrice(it.getPrice() * 100);
+            var stock = stockRepository.findById(it.getStockId()).orElseThrow(() -> {throw new RuntimeException("Stock ID not found");});
+            var batchInvestment = batchInvestmentRepository
+                .findById(it.getBatchInvestmentId()).orElseThrow(() -> {throw new RuntimeException("Batch Investment ID not found");});
+
+            batchInvestment.setTotal(
+                    it.getStatus() == InvestmentMoveStatus.BUY ?
+                            (batchInvestment.getTotal() + (it.getPrice() * it.getQuantity())) :
+                            (batchInvestment.getTotal() - (it.getPrice() * it.getQuantity())));
+            batchInvestmentRepository.updateTotal(batchInvestment.getTotal(), batchInvestment.getId());
+
+            stock.setQuotas(it.getStatus() == InvestmentMoveStatus.BUY ? (stock.getQuotas() + it.getQuantity()) : (stock.getQuotas() - it.getQuantity()));
+            stockRepository.updateQuotas(stock.getId(), stock.getQuotas());
+
+            return new InvestmentMove(it, stock, batchInvestment);
         }).collect(Collectors.toList());
 
         investmentMoveRepository.saveAll(investmentMoves);
 
-        return ResponseEntity.status(201).body("Investments Moves created successfully");
+        return ResponseEntity.status(201).body("Investment Moves created successfully");
     }
 
     @Transactional
@@ -84,6 +97,12 @@ public class InvestmentMoveService {
         if (!investmentMoveRepository.existsById(investmentMoveId)) {
             return ResponseEntity.status(400).body("Id '"+investmentMoveId+"' does not exists!");
         }
+
+        var move = investmentMoveRepository.findById(investmentMoveId).get();
+        var newTotal = batchInvestmentRepository.getTotal(move.getBatchInvestment().getId()) - (move.getPrice() * move.getQuantity());
+
+        batchInvestmentRepository.updateTotal(newTotal, move.getBatchInvestment().getId());
+        stockRepository.updateQuotas(move.getStock().getId(), move.getStock().getQuotas() - move.getQuantity());
 
         investmentMoveRepository.deleteById(investmentMoveId);
 

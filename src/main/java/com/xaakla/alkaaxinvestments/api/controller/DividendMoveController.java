@@ -8,9 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
-@RequestMapping("/dividend-moves")
+@RequestMapping("/dividend-move")
 public class DividendMoveController {
 
     @Autowired
@@ -20,8 +21,8 @@ public class DividendMoveController {
     public ResponseEntity findAll() { return dividendMoveService.findAll(); }
 
     @PostMapping
-    public ResponseEntity save(@RequestBody @Valid DividendMoveCreateReqModel dividendMoveCreateReqModel) {
-        return dividendMoveService.save(dividendMoveCreateReqModel);
+    public ResponseEntity saveAll(@RequestBody @Valid List<DividendMoveCreateReqModel> dividendMoveCreateReqModelList) {
+        return dividendMoveService.saveAll(dividendMoveCreateReqModelList);
     }
 
     @PatchMapping

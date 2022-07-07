@@ -19,6 +19,14 @@ public class BatchDividendController {
     @GetMapping
     public ResponseEntity findAll() { return batchDividendService.findAll(); }
 
+    @GetMapping("/groups")
+    public ResponseEntity findAllGroups() { return batchDividendService.findAllGroups(); }
+
+    @GetMapping("/groups/{stockId}")
+    public ResponseEntity findAllGroupsByStock(@PathVariable Long stockId) {
+        return batchDividendService.findAllGroupsByStockId(stockId);
+    }
+
     @PostMapping
     public ResponseEntity save(@RequestBody @Valid BatchDividendCreateReqModel batchDividendCreateReqModel) {
         return batchDividendService.save(batchDividendCreateReqModel);

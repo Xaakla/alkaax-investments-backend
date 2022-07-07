@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class DividendMoveService {
 
@@ -27,24 +30,47 @@ public class DividendMoveService {
     public ResponseEntity findAll() { return ResponseEntity.status(200).body(dividendMoveRepository.findAll()); }
 
     @Transactional
-    public ResponseEntity save(DividendMoveCreateReqModel dividendMoveCreateReqModel)
+    public ResponseEntity saveAll(List<DividendMoveCreateReqModel> dividendMoveCreateReqModelList)
     {
-        if (!batchDividendRepository.existsById(dividendMoveCreateReqModel.getBatchDividendId())) {
-            return ResponseEntity.status(400).body("batchInvestmentId '"+dividendMoveCreateReqModel.getBatchDividendId()+"' does not exists!");
-        }
-        dividendMoveRepository.save(
-                new DividendMove(dividendMoveCreateReqModel,
-                        stockRepository.findById(dividendMoveCreateReqModel.getStockId())
-                                .orElseThrow(() -> { throw new RuntimeException("stockId '"+dividendMoveCreateReqModel.getStockId()+"' does not exists!"); }),
-                        batchDividendRepository.findById(dividendMoveCreateReqModel.getBatchDividendId()).get())
-        );
+        var dividendMoves = dividendMoveCreateReqModelList.stream().map(it -> {
+            it.setPrice(it.getPrice() * 100);
+            var stock = stockRepository.findById(it.getStockId()).orElseThrow(() -> {throw new RuntimeException("Stock ID not found");});
+            var batchDividend = batchDividendRepository
+                    .findById(it.getBatchDividendId()).orElseThrow(() -> {throw new RuntimeException("Batch Dividend ID not found");});
 
-        Float newTotal = batchDividendRepository.getTotal(dividendMoveCreateReqModel.getBatchDividendId())
-                + (dividendMoveCreateReqModel.getPrice() * dividendMoveCreateReqModel.getQuantity());
+            batchDividend.setTotal((batchDividend.getTotal() + (it.getPrice() * it.getQuantity())));
+            batchDividendRepository.updateTotal(batchDividend.getTotal(), batchDividend.getId());
 
-        batchDividendRepository.updateTotal(newTotal, dividendMoveCreateReqModel.getBatchDividendId());
+            stock.setQuotas(stock.getQuotas() + it.getQuantity());
+            stockRepository.updateQuotas(stock.getId(), stock.getQuotas());
 
-        return ResponseEntity.status(201).body("Dividend move created successfully");
+            return new DividendMove(it, stock, batchDividend);
+        }).collect(Collectors.toList());
+
+        dividendMoveRepository.saveAll(dividendMoves);
+
+
+
+
+
+
+
+//        if (!batchDividendRepository.existsById(dividendMoveCreateReqModel.getBatchDividendId())) {
+//            return ResponseEntity.status(400).body("batchInvestmentId '"+dividendMoveCreateReqModel.getBatchDividendId()+"' does not exists!");
+//        }
+//        dividendMoveRepository.save(
+//                new DividendMove(dividendMoveCreateReqModel,
+//                        stockRepository.findById(dividendMoveCreateReqModel.getStockId())
+//                                .orElseThrow(() -> { throw new RuntimeException("stockId '"+dividendMoveCreateReqModel.getStockId()+"' does not exists!"); }),
+//                        batchDividendRepository.findById(dividendMoveCreateReqModel.getBatchDividendId()).get())
+//        );
+//
+//        Float newTotal = batchDividendRepository.getTotal(dividendMoveCreateReqModel.getBatchDividendId())
+//                + (dividendMoveCreateReqModel.getPrice() * dividendMoveCreateReqModel.getQuantity());
+//
+//        batchDividendRepository.updateTotal(newTotal, dividendMoveCreateReqModel.getBatchDividendId());
+
+        return ResponseEntity.status(201).body("Dividend Moves created successfully");
     }
 
     @Transactional

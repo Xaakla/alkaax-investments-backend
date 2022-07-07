@@ -19,6 +19,14 @@ public class BatchInvestmentController {
     @GetMapping
     public ResponseEntity findAll() { return batchInvestmentService.findAll(); }
 
+    @GetMapping("/groups")
+    public ResponseEntity findAllGroups() { return batchInvestmentService.findAllGroups(); }
+
+    @GetMapping("/groups/{stockId}")
+    public ResponseEntity findAllGroupsByStockId(@PathVariable Long stockId) {
+        return batchInvestmentService.findAllGroupsByStockId(stockId);
+    }
+
     @PostMapping
     public ResponseEntity save(@RequestBody @Valid BatchInvestmentCreateReqModel batchInvestmentCreateReqModel) {
         return batchInvestmentService.save(batchInvestmentCreateReqModel);
