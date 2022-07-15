@@ -1,6 +1,7 @@
 package com.xaakla.alkaaxinvestments.api.controller;
 
 import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveCreateReqModel;
+import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveEditAndSaveAllModel;
 import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveEditReqModel;
 import com.xaakla.alkaaxinvestments.domain.service.InvestmentMoveService;
 import org.springframework.beans.factory.annotation.Autowired;

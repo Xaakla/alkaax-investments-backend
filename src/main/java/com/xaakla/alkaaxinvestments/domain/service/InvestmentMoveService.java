@@ -1,6 +1,7 @@
 package com.xaakla.alkaaxinvestments.domain.service;
 
 import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveCreateReqModel;
+import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveEditAndSaveAllModel;
 import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveEditReqModel;
 import com.xaakla.alkaaxinvestments.domain.model.InvestmentMove;
 import com.xaakla.alkaaxinvestments.domain.model.InvestmentMoveStatus;

@@ -10,4 +10,6 @@ public interface DividendMoveRepository extends JpaRepository<DividendMove, Long
     List<DividendMove> findAllByBatchDividend_Id(Long id);
 
     List<DividendMove> findAllByStock_IdAndBatchDividend_Id(Long stockId, Long batchDividendId);
+
+    void deleteAllByStock_Id(Long stockId);
 }

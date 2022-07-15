@@ -21,6 +21,11 @@ public class StockController {
         return stockService.findAll();
     }
 
+    @GetMapping("/{stockId}")
+    public ResponseEntity findOneById(@PathVariable Long stockId) {
+        return stockService.findOneById(stockId);
+    }
+
     @PostMapping
     public ResponseEntity save(@RequestBody @Valid StockCreateReqModel stockCreateReqModel) {
         return stockService.save(stockCreateReqModel);

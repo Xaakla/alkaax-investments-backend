@@ -40,6 +40,7 @@ public class InvestmentMove {
     private BatchInvestment batchInvestment;
 
     public InvestmentMove(InvestmentMoveCreateReqModel investmentMoveCreateReqModel, Stock stock, BatchInvestment batchInvestment) {
+        this.id = investmentMoveCreateReqModel.getId();
         this.quantity = investmentMoveCreateReqModel.getQuantity();
         this.price = investmentMoveCreateReqModel.getPrice();
         this.status = investmentMoveCreateReqModel.getStatus();

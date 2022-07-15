@@ -29,6 +29,7 @@ public class BatchDividend {
     private Float total;
 
     public BatchDividend(BatchDividendCreateReqModel batchDividendCreateReqModel) {
+        this.id = batchDividendCreateReqModel.getId();
         this.name = batchDividendCreateReqModel.getName();
         this.total = 0f;
     }

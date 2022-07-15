@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class DividendMoveCreateReqModel {
 
+    private Long id;
+
     @NotNull
     private int quantity;
 

@@ -11,8 +11,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class InvestmentMoveCreateReqModel {
-
+public class InvestmentMoveEditAndSaveAllModel {
     private Long id;
 
     @NotNull

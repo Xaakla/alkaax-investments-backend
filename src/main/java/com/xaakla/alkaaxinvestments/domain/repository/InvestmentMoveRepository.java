@@ -18,4 +18,6 @@ public interface InvestmentMoveRepository extends JpaRepository<InvestmentMove, 
     List<InvestmentMove> findAllByStock_Id(Long id);
 
     List<InvestmentMove> findAllByStock_IdAndBatchInvestment_Id(Long stockId, Long batchInvestmentId);
+
+    void deleteAllByStock_Id(Long stockId);
 }

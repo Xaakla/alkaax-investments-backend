@@ -34,6 +34,7 @@ public class DividendMove {
     private BatchDividend batchDividend;
 
     public DividendMove(DividendMoveCreateReqModel dividendMoveCreateReqModel, Stock stock, BatchDividend batchDividend) {
+        this.id = dividendMoveCreateReqModel.getId();
         this.quantity = dividendMoveCreateReqModel.getQuantity();
         this.price = dividendMoveCreateReqModel.getPrice();
         this.stock = stock;

@@ -25,9 +25,10 @@ public class BatchInvestment {
     private String name;
 
     @NotNull
-    private Float total;
+    private float total;
 
     public BatchInvestment(BatchInvestmentCreateReqModel batchInvestmentCreateReqModel) {
+        this.id = batchInvestmentCreateReqModel.getId();
         this.name = batchInvestmentCreateReqModel.getName();
         this.total = 0f;
     }
