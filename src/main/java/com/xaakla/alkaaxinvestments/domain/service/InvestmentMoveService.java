@@ -1,7 +1,6 @@
 package com.xaakla.alkaaxinvestments.domain.service;
 
 import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveCreateReqModel;
-import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveEditAndSaveAllModel;
 import com.xaakla.alkaaxinvestments.api.model.investmentMove.InvestmentMoveEditReqModel;
 import com.xaakla.alkaaxinvestments.domain.model.InvestmentMove;
 import com.xaakla.alkaaxinvestments.domain.model.InvestmentMoveStatus;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,7 +47,33 @@ public class InvestmentMoveService {
                             (batchInvestment.getTotal() - (it.getPrice() * it.getQuantity())));
             batchInvestmentRepository.updateTotal(batchInvestment.getTotal(), batchInvestment.getId());
 
-            stock.setQuotas(it.getStatus() == InvestmentMoveStatus.BUY ? (stock.getQuotas() + it.getQuantity()) : (stock.getQuotas() - it.getQuantity()));
+            // if exists
+            if (it.getId() != null) {
+                // se agora for comprar
+                if (it.getStatus() == InvestmentMoveStatus.BUY) {
+                    // verifica se antes era vender
+                    if (investmentMoveRepository.getInvestmentMoveStatusById(it.getId()) == InvestmentMoveStatus.SELL) {
+                        // pega as quotas atuais, some as quotas que ele vendeu e soma as quotas que ele quer comprar
+                        stock.setQuotas((stock.getQuotas() + investmentMoveRepository.getQuantityById(it.getId())) + it.getQuantity());
+                    } else {
+                        // pega as quotas atuais, diminui as quotas que ele comprou e soma as quotas que ele quer comprar
+                        stock.setQuotas((stock.getQuotas() - investmentMoveRepository.getQuantityById(it.getId())) + it.getQuantity());
+                    }
+                // se for vender
+                } else {
+                    // verifica se antes era comprar
+                    if (investmentMoveRepository.getInvestmentMoveStatusById(it.getId()) == InvestmentMoveStatus.BUY) {
+                        // pega as quotas atuais, diminui as quotas que ele comprou e diminui as quotas que ele quer vender
+                        stock.setQuotas((stock.getQuotas() - investmentMoveRepository.getQuantityById(it.getId())) - it.getQuantity());
+                    } else {
+                        // pega as quotas atuais, soma as quotas que ele vendeu e diminui as quotas que ele quer vender
+                        stock.setQuotas((stock.getQuotas() + investmentMoveRepository.getQuantityById(it.getId())) - it.getQuantity());
+                    }
+                }
+            } else {
+                stock.setQuotas(it.getStatus() == InvestmentMoveStatus.BUY ? (stock.getQuotas() + it.getQuantity()) : (stock.getQuotas() - it.getQuantity()));
+            }
+
             stockRepository.updateQuotas(stock.getId(), stock.getQuotas());
 
             return new InvestmentMove(it, stock, batchInvestment);
@@ -91,6 +117,42 @@ public class InvestmentMoveService {
         batchInvestmentRepository.updateTotal(newTotal, investmentMoveEditReqModel.getBatchInvestmentId());
 
         return ResponseEntity.status(200).body("Investment move edited successfully");
+    }
+
+    @Transactional
+    public ResponseEntity deleteAllByIds(List<Long> ids) {
+        ids.forEach(id -> {
+            var investmentMove = investmentMoveRepository.findById(id).orElseThrow(() -> {throw new RuntimeException("Investment Move Id not found");});
+            var stock = stockRepository.findById(investmentMove.getStock().getId()).orElseThrow(() -> {throw new RuntimeException("Stock ID not found");});
+
+            // se agora for comprar
+            if (investmentMove.getStatus() == InvestmentMoveStatus.BUY) {
+                // verifica se antes era vender
+                if (investmentMoveRepository.getInvestmentMoveStatusById(investmentMove.getId()) == InvestmentMoveStatus.SELL) {
+                    // pega as quotas atuais, some as quotas que ele vendeu e soma as quotas que ele quer comprar
+                    stock.setQuotas((stock.getQuotas() + investmentMoveRepository.getQuantityById(investmentMove.getId())) + investmentMove.getQuantity());
+                } else {
+                    // pega as quotas atuais, diminui as quotas que ele comprou e soma as quotas que ele quer comprar
+                    stock.setQuotas((stock.getQuotas() - investmentMoveRepository.getQuantityById(investmentMove.getId())) + investmentMove.getQuantity());
+                }
+                // se for vender
+            } else {
+                // verifica se antes era comprar
+                if (investmentMoveRepository.getInvestmentMoveStatusById(investmentMove.getId()) == InvestmentMoveStatus.BUY) {
+                    // pega as quotas atuais, diminui as quotas que ele comprou e diminui as quotas que ele quer vender
+                    stock.setQuotas((stock.getQuotas() - investmentMoveRepository.getQuantityById(investmentMove.getId())) - investmentMove.getQuantity());
+                } else {
+                    // pega as quotas atuais, soma as quotas que ele vendeu e diminui as quotas que ele quer vender
+                    stock.setQuotas((stock.getQuotas() + investmentMoveRepository.getQuantityById(investmentMove.getId())) - investmentMove.getQuantity());
+                }
+            }
+
+            stockRepository.updateQuotas(stock.getId(), stock.getQuotas());
+        });
+
+        investmentMoveRepository.deleteAllById(ids);
+
+        return ResponseEntity.ok("All investment moves deleted successfully!");
     }
 
     @Transactional

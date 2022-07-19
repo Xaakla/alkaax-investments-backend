@@ -41,34 +41,10 @@ public class DividendMoveService {
             batchDividend.setTotal((batchDividend.getTotal() + (it.getPrice() * it.getQuantity())));
             batchDividendRepository.updateTotal(batchDividend.getTotal(), batchDividend.getId());
 
-            stock.setQuotas(stock.getQuotas() + it.getQuantity());
-            stockRepository.updateQuotas(stock.getId(), stock.getQuotas());
-
             return new DividendMove(it, stock, batchDividend);
         }).collect(Collectors.toList());
 
         dividendMoveRepository.saveAll(dividendMoves);
-
-
-
-
-
-
-
-//        if (!batchDividendRepository.existsById(dividendMoveCreateReqModel.getBatchDividendId())) {
-//            return ResponseEntity.status(400).body("batchInvestmentId '"+dividendMoveCreateReqModel.getBatchDividendId()+"' does not exists!");
-//        }
-//        dividendMoveRepository.save(
-//                new DividendMove(dividendMoveCreateReqModel,
-//                        stockRepository.findById(dividendMoveCreateReqModel.getStockId())
-//                                .orElseThrow(() -> { throw new RuntimeException("stockId '"+dividendMoveCreateReqModel.getStockId()+"' does not exists!"); }),
-//                        batchDividendRepository.findById(dividendMoveCreateReqModel.getBatchDividendId()).get())
-//        );
-//
-//        Float newTotal = batchDividendRepository.getTotal(dividendMoveCreateReqModel.getBatchDividendId())
-//                + (dividendMoveCreateReqModel.getPrice() * dividendMoveCreateReqModel.getQuantity());
-//
-//        batchDividendRepository.updateTotal(newTotal, dividendMoveCreateReqModel.getBatchDividendId());
 
         return ResponseEntity.status(201).body("Dividend Moves created successfully");
     }

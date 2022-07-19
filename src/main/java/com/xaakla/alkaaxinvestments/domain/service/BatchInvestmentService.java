@@ -23,11 +23,13 @@ public class BatchInvestmentService {
     BatchInvestmentRepository batchInvestmentRepository;
     InvestmentMoveRepository investmentMoveRepository;
     StockRepository stockRepository;
+    InvestmentMoveService investmentMoveService;
 
-    public BatchInvestmentService(BatchInvestmentRepository batchInvestmentRepository, InvestmentMoveRepository investmentMoveRepository, StockRepository stockRepository) {
+    public BatchInvestmentService(BatchInvestmentRepository batchInvestmentRepository, InvestmentMoveRepository investmentMoveRepository, StockRepository stockRepository, InvestmentMoveService investmentMoveService) {
         this.batchInvestmentRepository = batchInvestmentRepository;
         this.investmentMoveRepository = investmentMoveRepository;
         this.stockRepository = stockRepository;
+        this.investmentMoveService = investmentMoveService;
     }
 
     public ResponseEntity findAll() { return ResponseEntity.status(200).body(batchInvestmentRepository.findAll()); }
@@ -95,13 +97,11 @@ public class BatchInvestmentService {
             return ResponseEntity.status(400).body("Id '"+batchInvestmentId+"' does not exists!");
         }
 
-        investmentMoveRepository
+        var ids = investmentMoveRepository
                 .findAllByBatchInvestment_Id(batchInvestmentId)
-                .forEach(it -> {
-                    var stock = stockRepository.findById(it.getStock().getId()).orElseThrow(() -> {throw new RuntimeException("Could not find stock id");});
-                    stockRepository.updateQuotas(stock.getId(), stock.getQuotas() - it.getQuantity());
-                    investmentMoveRepository.deleteById(it.getId());
-                });
+                .stream().map(InvestmentMove::getId).collect(Collectors.toList());
+
+        investmentMoveService.deleteAllByIds(ids);
 
         batchInvestmentRepository.deleteById(batchInvestmentId);
 

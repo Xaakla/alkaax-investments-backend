@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/investment-move")
@@ -34,5 +35,10 @@ public class InvestmentMoveController {
     @DeleteMapping("/{investmentMoveId}")
     public ResponseEntity deleteById(@PathVariable Long investmentMoveId) {
         return investmentMoveService.deleteById(investmentMoveId);
+    }
+
+    @DeleteMapping
+    public ResponseEntity deleteAllByIds(@RequestParam List<Long> ids) {
+        return investmentMoveService.deleteAllByIds(ids);
     }
 }

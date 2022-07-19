@@ -10,4 +10,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     @Modifying
     @Query("UPDATE Stock p SET p.quotas = :quotas WHERE p.id = :id")
     void updateQuotas(Long id, int quotas);
+
+    @Query("SELECT quotas FROM Stock WHERE id = :id")
+    int getQuotasById(Long id);
 }

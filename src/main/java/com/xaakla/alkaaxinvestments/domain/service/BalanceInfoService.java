@@ -46,4 +46,8 @@ public class BalanceInfoService {
         return ResponseEntity.ok((float) batchDividendRepository.findAll()
                 .stream().mapToDouble(BatchDividend::getTotal).sum() / 100);
     }
+
+    public ResponseEntity getAllStocksQuantity() {
+        return ResponseEntity.ok(stockRepository.findAll().size());
+    }
 }

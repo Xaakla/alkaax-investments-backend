@@ -28,4 +28,7 @@ public class BalanceInfoController {
     public ResponseEntity getVariableIncomeDividend() {
         return balanceInfoService.getVariableIncomeTotalDividend();
     }
+
+    @GetMapping("/stocks-quantity")
+    public ResponseEntity getAllStocksQuantity() { return balanceInfoService.getAllStocksQuantity(); }
 }
