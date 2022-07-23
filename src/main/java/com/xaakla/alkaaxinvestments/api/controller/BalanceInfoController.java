@@ -4,6 +4,7 @@ import com.xaakla.alkaaxinvestments.domain.service.BalanceInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,4 +32,14 @@ public class BalanceInfoController {
 
     @GetMapping("/stocks-quantity")
     public ResponseEntity getAllStocksQuantity() { return balanceInfoService.getAllStocksQuantity(); }
+
+    @GetMapping("/variable-income-investment/{stockId}")
+    public ResponseEntity getVariableIncomeInvestmentByStockId(@PathVariable Long stockId) {
+        return balanceInfoService.getVariableIncomeInvestmentByStockId(stockId);
+    }
+
+    @GetMapping("/variable-income-dividend/{stockId}")
+    public ResponseEntity getVariableIncomeDividendByStockId(@PathVariable Long stockId) {
+        return balanceInfoService.getVariableIncomeDividendByStockId(stockId);
+    }
 }

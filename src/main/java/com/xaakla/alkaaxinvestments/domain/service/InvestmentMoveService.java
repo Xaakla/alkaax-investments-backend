@@ -135,8 +135,7 @@ public class InvestmentMoveService {
                     // pega as quotas atuais, diminui as quotas que ele comprou e soma as quotas que ele quer comprar
                     stock.setQuotas((stock.getQuotas() - investmentMoveRepository.getQuantityById(investmentMove.getId())) + investmentMove.getQuantity());
                 }
-                // se for vender
-            } else {
+            } else { // se for vender
                 // verifica se antes era comprar
                 if (investmentMoveRepository.getInvestmentMoveStatusById(investmentMove.getId()) == InvestmentMoveStatus.BUY) {
                     // pega as quotas atuais, diminui as quotas que ele comprou e diminui as quotas que ele quer vender

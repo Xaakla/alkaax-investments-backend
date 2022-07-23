@@ -11,6 +11,7 @@ public class BalanceInfoService {
 
     StockRepository stockRepository;
     BatchInvestmentRepository batchInvestmentRepository;
+    BatchInvestmentService batchInvestmentService;
     InvestmentMoveRepository investmentMoveRepository;
     BatchDividendRepository batchDividendRepository;
     DividendMoveRepository dividendMoveRepository;
@@ -19,12 +20,13 @@ public class BalanceInfoService {
                         BatchInvestmentRepository batchInvestmentRepository,
                         InvestmentMoveRepository investmentMoveRepository,
                         BatchDividendRepository batchDividendRepository,
-                        DividendMoveRepository dividendMoveRepository) {
+                        DividendMoveRepository dividendMoveRepository, BatchInvestmentService batchInvestmentService) {
         this.stockRepository = stockRepository;
         this.batchInvestmentRepository = batchInvestmentRepository;
         this.investmentMoveRepository = investmentMoveRepository;
         this.batchDividendRepository = batchDividendRepository;
         this.dividendMoveRepository = dividendMoveRepository;
+        this.batchInvestmentService = batchInvestmentService;
     }
 
     public ResponseEntity getVariableIncomeTotalBalance() {
@@ -49,5 +51,27 @@ public class BalanceInfoService {
 
     public ResponseEntity getAllStocksQuantity() {
         return ResponseEntity.ok(stockRepository.findAll().size());
+    }
+
+    public ResponseEntity getVariableIncomeInvestmentByStockId(Long stockId) {
+        if (!stockRepository.existsById(stockId)) {
+            return ResponseEntity.status(404).body("stock id not found");
+        }
+
+        var total = (float) investmentMoveRepository.findAllByStock_Id(stockId)
+                .stream().mapToDouble(it -> it.getPrice() * it.getQuantity()).sum();
+
+        return ResponseEntity.ok(total / 100);
+    }
+
+    public ResponseEntity getVariableIncomeDividendByStockId(Long stockId) {
+        if (!stockRepository.existsById(stockId)) {
+            return ResponseEntity.status(404).body("stock id not found");
+        }
+
+        var total = (float) dividendMoveRepository.findAllByStock_Id(stockId)
+                .stream().mapToDouble(it -> it.getPrice() * it.getQuantity()).sum();
+
+        return ResponseEntity.ok(total / 100);
     }
 }
