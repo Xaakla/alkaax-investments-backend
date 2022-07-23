@@ -4,6 +4,7 @@ import com.xaakla.alkaaxinvestments.api.model.batchDividend.BatchDividendCreateR
 import com.xaakla.alkaaxinvestments.api.model.batchDividend.BatchDividendEditReqModel;
 import com.xaakla.alkaaxinvestments.api.model.batchDividend.GroupDividendResModel;
 import com.xaakla.alkaaxinvestments.domain.model.BatchDividend;
+import com.xaakla.alkaaxinvestments.domain.model.DividendMove;
 import com.xaakla.alkaaxinvestments.domain.repository.BatchDividendRepository;
 import com.xaakla.alkaaxinvestments.domain.repository.DividendMoveRepository;
 import com.xaakla.alkaaxinvestments.domain.repository.StockRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 @Service
 public class BatchDividendService {
@@ -19,11 +21,13 @@ public class BatchDividendService {
     BatchDividendRepository batchDividendRepository;
     DividendMoveRepository dividendMoveRepository;
     StockRepository stockRepository;
+    DividendMoveService dividendMoveService;
 
-    public BatchDividendService(StockRepository stockRepository, BatchDividendRepository batchDividendRepository, DividendMoveRepository dividendMoveRepository) {
+    public BatchDividendService(StockRepository stockRepository, BatchDividendRepository batchDividendRepository, DividendMoveRepository dividendMoveRepository, DividendMoveService dividendMoveService) {
         this.batchDividendRepository = batchDividendRepository;
         this.dividendMoveRepository = dividendMoveRepository;
         this.stockRepository = stockRepository;
+        this.dividendMoveService = dividendMoveService;
     }
 
     public ResponseEntity findAll() { return ResponseEntity.status(200).body(batchDividendRepository.findAll()); }
@@ -90,6 +94,12 @@ public class BatchDividendService {
         if (!batchDividendRepository.existsById(batchDividendId)) {
             return ResponseEntity.status(400).body("Id '"+batchDividendId+"' does not exists!");
         }
+
+        var ids = dividendMoveRepository
+                .findAllByBatchDividend_Id(batchDividendId)
+                        .stream().map(DividendMove::getId).collect(Collectors.toList());
+
+        dividendMoveRepository.deleteAllById(ids);
 
         batchDividendRepository.deleteById(batchDividendId);
 

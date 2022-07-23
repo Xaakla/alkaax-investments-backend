@@ -86,6 +86,11 @@ public class DividendMoveService {
             return ResponseEntity.status(400).body("Id '"+dividendMoveId+"' does not exists!");
         }
 
+        var move = dividendMoveRepository.findById(dividendMoveId).get();
+        var newTotal = batchDividendRepository.getTotal(move.getBatchDividend().getId()) - (move.getPrice() * move.getQuantity());
+
+        batchDividendRepository.updateTotal(newTotal, move.getBatchDividend().getId());
+
         dividendMoveRepository.deleteById(dividendMoveId);
 
         return ResponseEntity.status(200).body("Dividend move deleted successfully");
