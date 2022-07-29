@@ -25,6 +25,8 @@ public interface InvestmentMoveRepository extends JpaRepository<InvestmentMove, 
     @Query("SELECT quantity FROM InvestmentMove WHERE id = :id")
     int getQuantityById(Long id);
 
+    int getQuantityByStock_Id(Long stockId);
+
     @Query("SELECT status FROM InvestmentMove WHERE id = :id")
     InvestmentMoveStatus getInvestmentMoveStatusById(Long id);
 }

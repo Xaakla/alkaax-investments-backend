@@ -5,6 +5,7 @@ import com.xaakla.alkaaxinvestments.api.model.batchInvestment.BatchInvestmentEdi
 import com.xaakla.alkaaxinvestments.api.model.batchInvestment.GroupInvestmentResModel;
 import com.xaakla.alkaaxinvestments.domain.model.BatchInvestment;
 import com.xaakla.alkaaxinvestments.domain.model.InvestmentMove;
+import com.xaakla.alkaaxinvestments.domain.model.InvestmentMoveStatus;
 import com.xaakla.alkaaxinvestments.domain.repository.BatchInvestmentRepository;
 import com.xaakla.alkaaxinvestments.domain.repository.InvestmentMoveRepository;
 import com.xaakla.alkaaxinvestments.domain.repository.StockRepository;
@@ -101,7 +102,20 @@ public class BatchInvestmentService {
                 .findAllByBatchInvestment_Id(batchInvestmentId)
                 .stream().map(InvestmentMove::getId).collect(Collectors.toList());
 
-        investmentMoveService.deleteAllByIds(ids);
+        ids.forEach(id -> {
+            var investmentMove = investmentMoveRepository.findById(id).orElseThrow(() -> {throw new RuntimeException("Investment Move Id not found");});
+            var stock = stockRepository.findById(investmentMove.getStock().getId()).orElseThrow(() -> {throw new RuntimeException("Stock ID not found");});
+
+            if (investmentMove.getStatus() == InvestmentMoveStatus.BUY) {
+                stock.setQuotas(stock.getQuotas() - investmentMove.getQuantity());
+            } else {
+                stock.setQuotas(stock.getQuotas() + investmentMove.getQuantity());
+            }
+
+            stockRepository.updateQuotas(stock.getId(), stock.getQuotas());
+        });
+
+        investmentMoveRepository.deleteAllById(ids);
 
         batchInvestmentRepository.deleteById(batchInvestmentId);
 
