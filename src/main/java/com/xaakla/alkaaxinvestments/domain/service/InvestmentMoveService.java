@@ -144,29 +144,6 @@ public class InvestmentMoveService {
                 stock.setQuotas(stock.getQuotas() + investmentMove.getQuantity());
             }
 
-
-
-//            // se agora for comprar
-//            if (investmentMove.getStatus() == InvestmentMoveStatus.BUY) {
-//                // verifica se antes era vender
-//                if (investmentMoveRepository.getInvestmentMoveStatusById(investmentMove.getId()) == InvestmentMoveStatus.SELL) {
-//                    // pega as quotas atuais, some as quotas que ele vendeu e soma as quotas que ele quer comprar
-//                    stock.setQuotas((stock.getQuotas() + investmentMoveRepository.getQuantityById(investmentMove.getId())) + investmentMove.getQuantity());
-//                } else {
-//                    // pega as quotas atuais, diminui as quotas que ele comprou e soma as quotas que ele quer comprar
-//                    stock.setQuotas((stock.getQuotas() - investmentMoveRepository.getQuantityById(investmentMove.getId())) + investmentMove.getQuantity());
-//                }
-//            } else { // se for vender
-//                // verifica se antes era comprar
-//                if (investmentMoveRepository.getInvestmentMoveStatusById(investmentMove.getId()) == InvestmentMoveStatus.BUY) {
-//                    // pega as quotas atuais, diminui as quotas que ele comprou e diminui as quotas que ele quer vender
-//                    stock.setQuotas((stock.getQuotas() - investmentMoveRepository.getQuantityById(investmentMove.getId())) - investmentMove.getQuantity());
-//                } else {
-//                    // pega as quotas atuais, soma as quotas que ele vendeu e diminui as quotas que ele quer vender
-//                    stock.setQuotas((stock.getQuotas() + investmentMoveRepository.getQuantityById(investmentMove.getId())) - investmentMove.getQuantity());
-//                }
-//            }
-
             stockRepository.updateQuotas(stock.getId(), stock.getQuotas());
         });
 

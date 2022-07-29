@@ -2,9 +2,12 @@ package com.xaakla.alkaaxinvestments.domain.service;
 
 import com.xaakla.alkaaxinvestments.domain.model.BatchDividend;
 import com.xaakla.alkaaxinvestments.domain.model.BatchInvestment;
+import com.xaakla.alkaaxinvestments.domain.model.InvestmentMoveStatus;
 import com.xaakla.alkaaxinvestments.domain.repository.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class BalanceInfoService {
@@ -58,10 +61,16 @@ public class BalanceInfoService {
             return ResponseEntity.status(404).body("stock id not found");
         }
 
-        var total = (float) investmentMoveRepository.findAllByStock_Id(stockId)
-                .stream().mapToDouble(it -> it.getPrice() * it.getQuantity()).sum();
+        AtomicReference<Float> total = new AtomicReference<>(0f);
+        investmentMoveRepository.findAllByStock_Id(stockId).forEach(it -> {
+            if (it.getStatus() == InvestmentMoveStatus.BUY) {
+                total.set(total.get() + it.getPrice() * it.getQuantity());
+            } else {
+                total.set(total.get() - it.getPrice() * it.getQuantity());
+            }
+        });
 
-        return ResponseEntity.ok(total / 100);
+        return ResponseEntity.ok(total.get() / 100);
     }
 
     public ResponseEntity getVariableIncomeDividendByStockId(Long stockId) {
