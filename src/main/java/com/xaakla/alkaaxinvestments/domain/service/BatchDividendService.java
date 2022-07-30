@@ -3,12 +3,14 @@ package com.xaakla.alkaaxinvestments.domain.service;
 import com.xaakla.alkaaxinvestments.api.model.batchDividend.BatchDividendCreateReqModel;
 import com.xaakla.alkaaxinvestments.api.model.batchDividend.BatchDividendEditReqModel;
 import com.xaakla.alkaaxinvestments.api.model.batchDividend.GroupDividendResModel;
+import com.xaakla.alkaaxinvestments.config.security.CustomUserDetails;
 import com.xaakla.alkaaxinvestments.domain.model.BatchDividend;
 import com.xaakla.alkaaxinvestments.domain.model.DividendMove;
 import com.xaakla.alkaaxinvestments.domain.repository.BatchDividendRepository;
 import com.xaakla.alkaaxinvestments.domain.repository.DividendMoveRepository;
 import com.xaakla.alkaaxinvestments.domain.repository.StockRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,9 @@ public class BatchDividendService {
         this.dividendMoveService = dividendMoveService;
     }
 
-    public ResponseEntity findAll() { return ResponseEntity.status(200).body(batchDividendRepository.findAll()); }
+    public ResponseEntity findAll() {
+        return ResponseEntity.status(200).body(batchDividendRepository.findAll());
+    }
 
     public ResponseEntity findAllGroups() {
         var groupSet = new HashSet<>();
